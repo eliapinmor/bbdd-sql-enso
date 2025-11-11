@@ -1,20 +1,25 @@
 CREATE TABLE enso_tutors(
-    id_tutor integer constraint pk_id_tutor PRIMARY KEY;
-    id_student integer, 
+    id_tutor integer constraint pk_id_tutor PRIMARY KEY,
     id_role integer,
-    name_tutor varchar2 (50 BYTE),
-    surname1 varchar2 (100 BYTE),
+    name_tutor varchar(50),
+    surname1 varchar(100),
     phone_number text,
-    email varchar2(320 BYTE) constraint uk_tutors_email UNIQUE constraint nn_tutors_email NOT NULL,
+    email varchar2(320) constraint uk_tutors_email UNIQUE constraint nn_tutors_email NOT NULL,
     created_at timestamp(0) without time zone,
     updated_at timestamp(0) without time zone,
-    constraint fk_tutors_id_student_id_user foreign key (id_student) references users(id),
-    --??id_tutor e id_student deberian de ser una pk compuesta en caso de que el tutor sea tutor de más de un alumno
-    constraint fk_tutors_id_role foreign key (id_role) references roles(id_role)
+    constraint fk_tutors_id_role foreign key (id_role) references public.roles(id)
+)
+
+CREATE TABLE enso_tutors_students(
+    id_tutor integer,
+    id_student integer,
+    constraint pk_tutors_students PRIMARY KEY(id_tutor, id_student),
+    constraint fk_tutors_students_id_tutor foreign key (id_tutor) references enso_tutors(id_tutor),
+    constraint fk_tutors_students_id_student foreign key (id_student) references users(id)
 )
 
 CREATE TABLE enso_games(
-    id_game integer constraint pk_id_game PRIMARY KEY;
+    id_game integer constraint pk_id_game PRIMARY KEY,
     game_name varchar2 (50 BYTE) constraint uk_game_name UNIQUE constraint nn_name_game NOT NULL,
     game_description text,
     game_path text, --poner estructura
@@ -31,26 +36,30 @@ CREATE TABLE enso_collections(
     updated_at timestamp(0) without time zone    
 )
 
-CREATE TABLE enso_unidades_parameters(
-    id_unidad integer constraint pk_id_unidad PRIMARY KEY,
-    unidad_name text
-    --segundos, minutos, nº de errores,      insertar los datos 
-)
-
-CREATE TABLE enso_parameters(
-    id_parameter integer constraint pk_id_parameters PRIMARY KEY,
-    unidad_parameter,
-    minimum,
-    maximum
-)
-
-CREATE TABLE enso_collections_games_parameters(
+CREATE TABLE enso_collections_games(
+    id integer constraint pk_id_collections_game PRIMARY KEY,
     id_collection integer,
     id_game integer,
     id_parameter integer,
     created_at timestamp(0) without time zone,
     updated_at timestamp(0) without time zone,
 
+)
+
+CREATE TABLE enso_unidades_parameters(
+    id_unidad integer constraint pk_id_unidad PRIMARY KEY,
+    unidad_name text
+    --segundos, minutos, nº de errores,      insertar los datos 
+)
+
+CREATE TABLE enso_collections_games_parameters(
+    id_parameter integer constraint pk_id_parameter PRIMARY KEY,
+    id_unidad integer,
+    minimum integer,
+    maximum integer,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone,
+    constraint fk_parameters_id_unidad foreign key (id_unidad) references enso_unidades_parameters(id_unidad)
 )
 
 CREATE TABLE enso_files(
@@ -87,6 +96,7 @@ CREATE TABLE enso_messages(
 CREATE TABLE enso_recipient_type(
     id_recipient integer constraint pk_id_recipient PRIMARY KEY,
     recipient_name text
+    -- insertar los datos to , cc , cco
 )
 
 CREATE TABLE enso_messages_recipients(
