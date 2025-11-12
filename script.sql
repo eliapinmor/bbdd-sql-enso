@@ -48,6 +48,8 @@ CREATE TABLE enso_collections_games(
     id_parameter integer,
     created_at timestamp(0) without time zone,
     updated_at timestamp(0) without time zone,
+    constraint fk_collections_games_id_collection foreign key (id_collection) references enso_collections(id),
+    constraint fk_collections_games_id_game foreign key (id_game) references enso_games(id)
 
 )
 
@@ -58,13 +60,16 @@ CREATE TABLE enso_unidades_parameters(
 )
 
 CREATE TABLE enso_collections_games_parameters(
-    id_parameter integer constraint pk_id_parameter PRIMARY KEY,
+    id integer constraint pk_id_collections_games_parameter PRIMARY KEY,
+    id_collection_game integer,
     id_unidad integer,
     minimum integer,
     maximum integer,
     created_at timestamp(0) without time zone,
     updated_at timestamp(0) without time zone,
-    constraint fk_parameters_id_unidad foreign key (id_unidad) references enso_unidades_parameters(id_unidad)
+    constraint fk_parameters_id_unidad foreign key (id_unidad) references enso_unidades_parameters(id),
+    constraint fk_parameters_id_collection_game foreign key (id_collection_game) references enso_collections_games(id)
+
 )
 
 CREATE TABLE enso_files(
@@ -74,7 +79,7 @@ CREATE TABLE enso_files(
     file_path text,
     created_at timestamp(0) without time zone,
     updated_at timestamp(0) without time zone,
-    constraint fk_enso_files_id_student foreign key (id_role) references roles(id_role)
+    constraint fk_enso_files_id_student foreign key (id_role) references roles(id)
 )
 
 CREATE TABLE enso_sop_tracking(
@@ -92,10 +97,11 @@ CREATE TABLE enso_sop_tracking(
 
 CREATE TABLE enso_messages(
     id_message integer constraint pk_id_messages PRIMARY KEY,
-    id_sender,
-    subject_message,
-    body,
-    date_sent
+    id_sender integer,
+    subject_message text,
+    body text,
+    date_sent timestamp(0) without time zone,
+    constraint fk_enso_messages_id_sender foreign key (id_sender) references users(id)
 )
 
 CREATE TABLE enso_recipient_type(
